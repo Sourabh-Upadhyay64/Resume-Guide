@@ -26,6 +26,7 @@ export interface ResumeScanResponse {
 export interface QuestionResult {
   category: string;
   question: string;
+  answer: string;
 }
 
 export interface QuestionsResponse {

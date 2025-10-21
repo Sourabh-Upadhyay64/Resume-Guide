@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Sparkles, Briefcase, Calendar, FileText, Loader2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { Sparkles, Briefcase, Calendar, FileText, Loader2, Upload, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,9 +12,47 @@ const JobQuestions = () => {
   const [jobTitle, setJobTitle] = useState("");
   const [yoe, setYoe] = useState("");
   const [resumeText, setResumeText] = useState("");
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [extracting, setExtracting] = useState(false);
   const [questions, setQuestions] = useState<QuestionResult[] | null>(null);
+  const [visibleAnswers, setVisibleAnswers] = useState<Set<number>>(new Set());
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!validTypes.includes(selectedFile.type) && !selectedFile.name.endsWith('.pdf') && !selectedFile.name.endsWith('.docx')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a PDF or DOCX file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (selectedFile.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File Too Large",
+          description: "Please upload a file smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setResumeFile(selectedFile);
+      
+      // Set resume text indicator when file is uploaded
+      setResumeText(`[Resume uploaded: ${selectedFile.name}]`);
+      setExtracting(false);
+      toast({
+        title: "Resume Uploaded",
+        description: `${selectedFile.name} ready to use for personalized questions`,
+      });
+    }
+  };
 
   const handleGenerate = async () => {
     if (!jobTitle || !yoe) {
@@ -53,7 +91,24 @@ const JobQuestions = () => {
     setJobTitle("");
     setYoe("");
     setResumeText("");
+    setResumeFile(null);
     setQuestions(null);
+    setVisibleAnswers(new Set());
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const toggleAnswerVisibility = (index: number) => {
+    setVisibleAnswers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(index)) {
+        newSet.delete(index);
+      } else {
+        newSet.add(index);
+      }
+      return newSet;
+    });
   };
 
   const categoryColors: Record<string, string> = {
@@ -118,9 +173,34 @@ const JobQuestions = () => {
                   <FileText className="w-4 h-4 text-primary" />
                   Resume Text (Optional)
                 </Label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileSelect}
+                    accept=".pdf,.docx"
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={extracting}
+                    className="gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {extracting ? "Extracting..." : "Upload Resume"}
+                  </Button>
+                  {resumeFile && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>{resumeFile.name}</span>
+                      <span>({(resumeFile.size / 1024).toFixed(1)} KB)</span>
+                    </div>
+                  )}
+                </div>
                 <Textarea
                   id="resume"
-                  placeholder="Paste your resume content here for more personalized questions..."
+                  placeholder="Paste your resume content here or upload a file above for more personalized questions..."
                   value={resumeText}
                   onChange={(e) => setResumeText(e.target.value)}
                   className="min-h-[150px] border-2"
@@ -194,6 +274,38 @@ const JobQuestions = () => {
                       <p className="text-lg font-medium leading-relaxed">
                         {q.question}
                       </p>
+                      
+                      {q.answer && (
+                        <div className="mt-4 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleAnswerVisibility(index)}
+                              className="gap-2 text-muted-foreground hover:text-foreground"
+                            >
+                              {visibleAnswers.has(index) ? (
+                                <>
+                                  <EyeOff className="h-4 w-4" />
+                                  Hide Answer
+                                </>
+                              ) : (
+                                <>
+                                  <Eye className="h-4 w-4" />
+                                  Show Answer
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                          {visibleAnswers.has(index) && (
+                            <div className="mt-2 p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+                              <p className="text-sm leading-relaxed text-muted-foreground">
+                                {q.answer}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Card>

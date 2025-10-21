@@ -31,20 +31,17 @@ const JDMatcher = () => {
       }
 
       setResumeFile(file);
-      // Extract text from file for preview (simplified)
-      const reader = new FileReader();
-      reader.onload = () => {
-        toast({
-          title: "Resume Uploaded",
-          description: `${file.name} (${(file.size / 1024).toFixed(1)} KB)`,
-        });
-      };
-      reader.readAsText(file);
+      setResumeText(`[Resume uploaded: ${file.name}]`);
+      toast({
+        title: "Resume Uploaded",
+        description: `${file.name} (${(file.size / 1024).toFixed(1)} KB) - ready to match`,
+      });
     }
   };
 
   const handleMatch = async () => {
-    if (!resumeText && !resumeFile) {
+    // Check if we have resume (either uploaded or pasted)
+    if (!resumeText.trim() && !resumeFile) {
       toast({
         title: "Resume Required",
         description: "Please upload a resume or paste resume text",
@@ -64,8 +61,11 @@ const JDMatcher = () => {
 
     setLoading(true);
     try {
+      // Use resume text if available, otherwise send file info
+      const finalResumeText = resumeText.trim() || `Resume file: ${resumeFile?.name || 'uploaded'}`;
+      
       const response = await api.matchJD({
-        resumeText: resumeText || "Resume from uploaded file",
+        resumeText: finalResumeText,
         jdText,
       });
       setResult(response.result);

@@ -1,19 +1,6 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const apiKey = process.env.GEMINI_API_KEY;
-
-if (!apiKey) {
-  console.warn('⚠️  GEMINI_API_KEY is not set in environment. Gemini calls will fail until it is provided.');
-  console.warn('⚠️  Please create a .env file in backend/ with: GEMINI_API_KEY=your_key_here');
-}
-
-// Initialize the Gemini client with the correct SDK usage
-const genAI = new GoogleGenerativeAI(apiKey || 'dummy-key-for-init');
-
-const MODEL_NAME = 'gemini-1.5-pro';
+const MODEL_NAME = 'gemini-2.5-flash';
 
 /**
  * Generate text using Gemini API
@@ -22,12 +9,21 @@ const MODEL_NAME = 'gemini-1.5-pro';
  * @returns {Promise<{text: string, duration: number}>}
  */
 async function generate(prompt, options = {}) {
+  // Initialize at runtime to ensure dotenv has loaded
+  const apiKey = process.env.GEMINI_API_KEY;
+  
   if (!apiKey) {
+    console.error('[geminiClient] API Key loaded: MISSING');
     throw new Error('GEMINI_API_KEY is not configured. Please set it in your .env file.');
   }
 
+  console.log('[geminiClient] API Key loaded:', apiKey ? 'PRESENT' : 'MISSING');
+
   const start = Date.now();
   try {
+    // Initialize the Gemini client at runtime
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
     // Get the generative model
     const model = genAI.getGenerativeModel({ model: MODEL_NAME });
 
