@@ -21,7 +21,18 @@ import matcherRoutes from './routes/matcherRoutes.js';
 
 const app = express();
 
-app.use(cors());
+// Configure CORS to allow both local and production frontend
+const corsOptions = {
+  origin: [
+    'http://localhost:8080',
+    'http://localhost:5173',
+    'https://resume-guide-ai.vercel.app'
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: '5mb' }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -35,6 +46,9 @@ app.use('/api/jd', matcherRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const PORT = process.env.PORT || 4000;
+app.get("/", (req, res) => {
+  res.send("Server is live and working ");
+})
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
