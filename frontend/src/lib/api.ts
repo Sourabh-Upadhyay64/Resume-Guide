@@ -23,7 +23,7 @@ export interface ResumeScanResponse {
   result: ATSResult;
 }
 
-export interface Question {
+export interface QuestionResult {
   category: string;
   question: string;
 }
@@ -31,20 +31,20 @@ export interface Question {
 export interface QuestionsResponse {
   source: string;
   durationMs: number;
-  questions: Question[];
+  questions: QuestionResult[];
 }
 
 export interface JDMatchResult {
   matchScore: number;
   matchedSkills: string[];
   missingSkills: string[];
-  suggestions: string;
+  suggestions: string[];
 }
 
 export interface JDMatchResponse {
   source: string;
   durationMs: number;
-  match: JDMatchResult;
+  result: JDMatchResult;
 }
 
 export interface ApiError {
@@ -91,7 +91,7 @@ export const api = {
    */
   async generateQuestions(data: {
     jobTitle: string;
-    yoe: string;
+    yoe: number;
     resumeText?: string;
   }): Promise<QuestionsResponse> {
     const response = await fetch(API_ENDPOINTS.generateQuestions, {
@@ -115,7 +115,7 @@ export const api = {
    */
   async matchJD(data: {
     resumeText: string;
-    jobDescription: string;
+    jdText: string;
   }): Promise<JDMatchResponse> {
     const response = await fetch(API_ENDPOINTS.matchJD, {
       method: 'POST',

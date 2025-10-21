@@ -5,10 +5,15 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-dotenv.config();
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load .env from backend directory
+dotenv.config({ path: path.join(__dirname, '.env') });
+
+console.log('[server] Environment loaded from:', path.join(__dirname, '.env'));
+console.log('[server] GEMINI_API_KEY present:', !!process.env.GEMINI_API_KEY);
+console.log('[server] PORT:', process.env.PORT);
 
 import resumeRoutes from './routes/resumeRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
