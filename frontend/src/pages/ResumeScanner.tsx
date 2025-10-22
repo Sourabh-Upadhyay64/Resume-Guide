@@ -81,17 +81,41 @@ const ResumeScanner = () => {
 
   return (
     <div className="min-h-screen py-12 px-6">
-      <div className="container mx-auto max-w-5xl space-y-8">
+      <div className="container mx-auto max-w-4xl space-y-8">
         <div className="text-center space-y-4 animate-fade-in">
           <h1 className="text-4xl md:text-5xl font-bold">
             <span className="gradient-text">Resume Scanner</span>
           </h1>
           <p className="text-muted-foreground text-lg">
-            Upload your resume and get instant ATS optimization feedback powered by AI
+            Get instant ATS score and personalized suggestions powered by AI
           </p>
         </div>
 
-        {!uploaded ? (
+        {loading && (
+          <Card className="glass-card p-12 animate-scale-in">
+            <div className="flex flex-col items-center justify-center space-y-6">
+              <div className="relative w-24 h-24">
+                <div className="absolute inset-0 border-4 border-primary/30 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <FileText className="w-10 h-10 text-primary animate-pulse" />
+                </div>
+              </div>
+              <div className="text-center space-y-2">
+                <h3 className="text-xl font-semibold">Analyzing Your Resume</h3>
+                <p className="text-muted-foreground">
+                  Our AI is evaluating structure, keywords, and content quality...
+                </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground pt-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>This may take 10-30 seconds</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {!uploaded && !loading ? (
           <Card className="glass-card p-12 border-2 border-dashed border-primary/30 hover:border-primary/60 transition-all animate-scale-in">
             <div className="text-center space-y-6">
               <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg animate-pulse-glow">

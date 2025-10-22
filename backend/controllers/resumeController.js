@@ -36,18 +36,64 @@ export const scanResume = async (req, res) => {
       resumeText = req.file.buffer.toString('base64');
     }
 
-    const prompt = `Analyze the following resume and provide a JSON output with the EXACT format below. Return ONLY valid JSON, no markdown, no explanations:
+    const prompt = `You are an ATS (Applicant Tracking System) evaluator. Analyze this resume using CONSISTENT scoring criteria.
 
+EVALUATION CRITERIA (Total 100 points):
+1. Structure & Format (20 points):
+   - Clear sections (Contact, Summary, Experience, Education, Skills)
+   - Consistent formatting
+   - Proper spacing and organization
+   - Professional layout
+
+2. Content Quality (25 points):
+   - Quantifiable achievements with metrics
+   - Action verbs usage
+   - Relevant keywords for the role
+   - Clear and concise descriptions
+
+3. Professional Experience (25 points):
+   - Recent and relevant work history
+   - Clear job titles and dates
+   - Measurable accomplishments
+   - Career progression
+
+4. Skills & Keywords (20 points):
+   - Technical skills listed
+   - Industry-relevant keywords
+   - Tools and technologies mentioned
+   - Certifications if applicable
+
+5. Education & Credentials (10 points):
+   - Degree information
+   - Relevant certifications
+   - Additional training
+
+SCORING GUIDELINES:
+- 90-100: Excellent - ATS-optimized, highly competitive
+- 75-89: Good - Strong resume, minor improvements needed
+- 60-74: Fair - Needs improvement in key areas
+- Below 60: Poor - Major revisions required
+
+Return ONLY valid JSON in this EXACT format (no markdown, no explanations):
 {
-  "atsScore": (number 0-100),
-  "strengths": ["strength 1", "strength 2", "strength 3"],
-  "improvements": ["improvement 1", "improvement 2", "improvement 3", "improvement 4", "improvement 5"],
-  "summary": "brief summary of candidate profile"
-}`;
+  "atsScore": (number 0-100, calculate based on above criteria),
+  "strengths": ["specific strength 1", "specific strength 2", "specific strength 3"],
+  "improvements": ["specific improvement 1", "specific improvement 2", "specific improvement 3", "specific improvement 4", "specific improvement 5"],
+  "summary": "2-3 sentence professional summary of the candidate's profile and overall resume quality"
+}
+
+Be CONSISTENT - same resume should get same score. Base score on OBJECTIVE criteria above.`;
 
     console.log('[resume.scan] Sending to Gemini...');
     
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.5-pro',
+      generationConfig: {
+        temperature: 0.1, // Low temperature for consistent scoring
+        topP: 0.8,
+        topK: 20,
+      }
+    });
     
     let result;
     if (req.file.mimetype === 'application/pdf' || req.file.originalname.endsWith('.pdf')) {
