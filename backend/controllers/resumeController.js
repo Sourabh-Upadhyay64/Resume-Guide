@@ -10,16 +10,23 @@ export const scanResume = async (req, res) => {
   const apiKey = process.env.GEMINI_API_KEY;
   
   if (!apiKey) {
-    console.error('[resume.scan] GEMINI_API_KEY not found in environment');
-    return res.status(500).json({ error: 'Server configuration error: API key missing' });
+    console.error('[resume.scan] ❌ GEMINI_API_KEY not found in environment');
+    console.error('[resume.scan] Available env vars:', Object.keys(process.env).join(', '));
+    return res.status(500).json({ 
+      error: 'Server configuration error: API key missing',
+      details: 'GEMINI_API_KEY environment variable is not set on the server' 
+    });
   }
   
-  console.log('[resume.scan] API Key:', apiKey.substring(0, 10) + '...');
+  console.log('[resume.scan] ✓ API Key found:', apiKey.substring(0, 10) + '...');
   
   const genAI = new GoogleGenerativeAI(apiKey);
   
   try {
-    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    if (!req.file) {
+      console.error('[resume.scan] ❌ No file uploaded');
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
 
     console.log('[resume.scan] File:', req.file.originalname, 'Type:', req.file.mimetype, 'Size:', req.file.size);
 
@@ -87,7 +94,7 @@ Be CONSISTENT - same resume should get same score. Base score on OBJECTIVE crite
     console.log('[resume.scan] Sending to Gemini...');
     
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-2.5-pro',
+      model: 'gemini-1.5-pro', // Changed from gemini-2.5-pro to stable version
       generationConfig: {
         temperature: 0.1, // Low temperature for consistent scoring
         topP: 0.8,
@@ -142,8 +149,32 @@ Be CONSISTENT - same resume should get same score. Base score on OBJECTIVE crite
     return res.json({ source: 'gemini', durationMs: elapsed, result: jsonOut });
     
   } catch (err) {
-    console.error('[resume.scan] Error:', err);
-    const message = err?.error?.message || err?.message || 'Unknown error';
-    return res.status(500).json({ error: 'Resume scan failed', details: message });
+    console.error('[resume.scan] ❌ Error:', err);
+    console.error('[resume.scan] Error stack:', err.stack);
+    
+    // More detailed error handling
+    let errorMessage = 'Resume scan failed';
+    let errorDetails = err?.message || 'Unknown error';
+    
+    // Handle specific Gemini API errors
+    if (err?.message?.includes('API key')) {
+      errorMessage = 'Invalid API key';
+      errorDetails = 'The Gemini API key is invalid or expired';
+    } else if (err?.message?.includes('quota')) {
+      errorMessage = 'API quota exceeded';
+      errorDetails = 'Gemini API quota has been exceeded. Please try again later.';
+    } else if (err?.message?.includes('model')) {
+      errorMessage = 'Model not available';
+      errorDetails = 'The AI model is not available. Please contact support.';
+    } else if (err?.message?.includes('timeout')) {
+      errorMessage = 'Request timeout';
+      errorDetails = 'The request took too long. Please try with a smaller file.';
+    }
+    
+    return res.status(500).json({ 
+      error: errorMessage, 
+      details: errorDetails,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 };
