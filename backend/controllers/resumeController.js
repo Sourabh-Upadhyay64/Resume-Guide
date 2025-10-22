@@ -93,8 +93,9 @@ Be CONSISTENT - same resume should get same score. Base score on OBJECTIVE crite
 
     console.log('[resume.scan] Sending to Gemini...');
     
+    // Use the most stable and widely available Gemini model
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-pro', // Changed from gemini-2.5-pro to stable version
+      model: 'gemini-2.5-flash', // Most stable and fast model
       generationConfig: {
         temperature: 0.1, // Low temperature for consistent scoring
         topP: 0.8,

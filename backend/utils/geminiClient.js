@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const MODEL_NAME = 'gemini-2.5-flash';
+const MODEL_NAME = 'gemini-2.5-flash'; // Stable and widely available model
 
 /**
  * Generate text using Gemini API
@@ -18,6 +18,7 @@ async function generate(prompt, options = {}) {
   }
 
   console.log('[geminiClient] API Key loaded:', apiKey ? 'PRESENT' : 'MISSING');
+  console.log('[geminiClient] Using model:', MODEL_NAME);
 
   const start = Date.now();
   try {
