@@ -80,13 +80,13 @@ const ResumeScanner = () => {
   };
 
   return (
-    <div className="min-h-screen py-12 px-6">
-      <div className="container mx-auto max-w-4xl space-y-8">
-        <div className="text-center space-y-4 animate-fade-in">
-          <h1 className="text-4xl md:text-5xl font-bold">
+    <div className="min-h-screen py-8 sm:py-12 px-4 sm:px-6">
+      <div className="container mx-auto max-w-4xl space-y-6 sm:space-y-8">
+        <div className="text-center space-y-3 sm:space-y-4 animate-fade-in">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
             <span className="gradient-text">Resume Scanner</span>
           </h1>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-base sm:text-lg px-4">
             Get instant ATS score and personalized suggestions powered by AI
           </p>
         </div>
@@ -115,22 +115,22 @@ const ResumeScanner = () => {
           </Card>
         )}
 
-        {!uploaded && !loading ? (
-          <Card className="glass-card p-12 border-2 border-dashed border-primary/30 hover:border-primary/60 transition-all animate-scale-in">
+                {!uploaded && !loading ? (
+          <Card className="glass-card p-6 sm:p-8 animate-scale-in">
             <div className="text-center space-y-6">
-              <div className="w-20 h-20 mx-auto bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg animate-pulse-glow">
-                <Upload className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-lg animate-float">
+                <Upload className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold mb-2">Upload Your Resume</h3>
-                <p className="text-muted-foreground mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold mb-2">Upload Your Resume</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4">
                   Support for PDF and DOCX files up to 5MB
                 </p>
                 {file && (
-                  <div className="flex items-center justify-center gap-3 p-3 bg-primary/10 rounded-lg border border-primary/30 max-w-md mx-auto">
-                    <FileText className="w-5 h-5 text-primary" />
-                    <span className="text-sm font-medium truncate flex-1">{file.name}</span>
-                    <span className="text-xs text-muted-foreground">
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 p-3 bg-primary/10 rounded-lg border border-primary/30 max-w-md mx-auto">
+                    <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
+                    <span className="text-xs sm:text-sm font-medium truncate flex-1">{file.name}</span>
+                    <span className="text-xs text-muted-foreground whitespace-nowrap">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </span>
                   </div>
@@ -144,12 +144,12 @@ const ResumeScanner = () => {
                 className="hidden"
                 id="resume-upload"
               />
-              <div className="flex gap-3 justify-center">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button
                   size="lg"
                   onClick={() => fileInputRef.current?.click()}
                   variant="outline"
-                  className="border-2"
+                  className="w-full sm:w-auto border-2"
                 >
                   <FileText className="w-5 h-5 mr-2" />
                   Choose File
@@ -158,7 +158,7 @@ const ResumeScanner = () => {
                   size="lg"
                   onClick={handleUpload}
                   disabled={!file || loading}
-                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg"
+                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg"
                 >
                   {loading ? (
                     <>
@@ -176,13 +176,13 @@ const ResumeScanner = () => {
             </div>
           </Card>
         ) : result ? (
-          <div className="space-y-6 animate-fade-in">
-            <Card className="glass-card p-8 hover-lift">
-              <div className="flex flex-col md:flex-row items-center gap-8">
-                <div className="relative w-40 h-40 flex-shrink-0">
+          <div className="space-y-4 sm:space-y-6 animate-fade-in">
+            <Card className="glass-card p-4 sm:p-8 hover-lift">
+              <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 flex-shrink-0">
                   <svg className="w-full h-full -rotate-90">
-                    <circle cx="80" cy="80" r="70" stroke="currentColor" strokeWidth="12" fill="none" className="text-muted" />
-                    <circle cx="80" cy="80" r="70" stroke="url(#gradient)" strokeWidth="12" fill="none"
+                    <circle cx="50%" cy="50%" r="45%" stroke="currentColor" strokeWidth="12" fill="none" className="text-muted" />
+                    <circle cx="50%" cy="50%" r="45%" stroke="url(#gradient)" strokeWidth="12" fill="none"
                       strokeDasharray={`${2 * Math.PI * 70}`}
                       strokeDashoffset={`${2 * Math.PI * 70 * (1 - result.atsScore / 100)}`}
                       className="transition-all duration-1000" strokeLinecap="round" />
@@ -195,35 +195,35 @@ const ResumeScanner = () => {
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="text-center">
-                      <div className="text-4xl font-bold gradient-text">{result.atsScore}</div>
-                      <div className="text-sm text-muted-foreground">ATS Score</div>
+                      <div className="text-3xl sm:text-4xl font-bold gradient-text">{result.atsScore}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">ATS Score</div>
                     </div>
                   </div>
                 </div>
-                <div className="flex-1 space-y-4">
+                <div className="flex-1 space-y-3 sm:space-y-4 text-center md:text-left">
                   <div>
-                    <h2 className="text-2xl font-bold mb-2">
+                    <h2 className="text-xl sm:text-2xl font-bold mb-2">
                       {result.atsScore >= 80 ? "Excellent!" : result.atsScore >= 60 ? "Good Progress!" : "Needs Improvement"}
                     </h2>
-                    <p className="text-muted-foreground">{result.summary}</p>
+                    <p className="text-sm sm:text-base text-muted-foreground">{result.summary}</p>
                   </div>
-                  <Progress value={result.atsScore} className="h-3" />
+                  <Progress value={result.atsScore} className="h-2 sm:h-3" />
                 </div>
               </div>
             </Card>
 
             {result.strengths.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-primary" />
                   Your Strengths
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                   {result.strengths.map((strength, index) => (
-                    <Card key={index} className="glass-card p-4 hover-lift border-l-4 border-l-primary">
-                      <div className="flex items-start gap-3">
-                        <CheckCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <p className="text-sm">{strength}</p>
+                    <Card key={index} className="glass-card p-3 sm:p-4 hover-lift border-l-4 border-l-primary">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+                        <p className="text-xs sm:text-sm">{strength}</p>
                       </div>
                     </Card>
                   ))}
@@ -233,16 +233,16 @@ const ResumeScanner = () => {
 
             {result.improvements.length > 0 && (
               <div>
-                <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+                <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-accent" />
                   Improvement Suggestions
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid gap-3 sm:gap-4">
                   {result.improvements.map((improvement, index) => (
-                    <Card key={index} className="glass-card p-4 hover-lift border-l-4 border-l-accent">
-                      <div className="flex items-start gap-3">
-                        <AlertCircle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
-                        <p className="text-sm">{improvement}</p>
+                    <Card key={index} className="glass-card p-3 sm:p-4 hover-lift border-l-4 border-l-accent">
+                      <div className="flex items-start gap-2 sm:gap-3">
+                        <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-accent flex-shrink-0 mt-0.5" />
+                        <p className="text-xs sm:text-sm">{improvement}</p>
                       </div>
                     </Card>
                   ))}
@@ -250,8 +250,8 @@ const ResumeScanner = () => {
               </div>
             )}
 
-            <div className="flex gap-4 justify-center">
-              <Button variant="outline" size="lg" onClick={handleRescan} className="border-2 hover-lift">
+            <div className="flex gap-3 sm:gap-4 justify-center px-4">
+              <Button variant="outline" size="lg" onClick={handleRescan} className="w-full sm:w-auto border-2 hover-lift">
                 Re-scan Resume
               </Button>
             </div>
